@@ -9,6 +9,6 @@ export default new Router({
   routes: [
     { name: 'login', path: '/login', component: Login } ,
     { name: 'home',path: '/', component: Home }   
-  ],
-  mode: 'history'
+  ]
+  // ,  mode: 'history'
 })
