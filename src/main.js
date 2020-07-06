@@ -7,7 +7,13 @@ import router from './router'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 
-Vue.use(ElementUI);
+import '@/assets/css/reset.css'
+import MyServerHttp from '@/plugins/http.js'
+import MyHttpServer from './plugins/http';
+
+Vue.use(ElementUI)
+
+Vue.use(MyServerHttp)
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
