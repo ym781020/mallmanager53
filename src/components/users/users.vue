@@ -49,13 +49,14 @@
       </el-table-column>
       <el-table-column prop="address" label="操作" width="180">
         <template slot-scope="userlist">
-          <el-button 
-          size="mini"
-          plan 
-          type="primary" 
-          icon="el-icon-edit"
-          circle
-          @click="editUserMsgBox(userlist.row.id)"></el-button>
+          <el-button
+            size="mini"
+            plan
+            type="primary"
+            icon="el-icon-edit"
+            circle
+            @click="editUser(userlist.row)"
+          ></el-button>
           <el-button
             size="mini"
             plan
@@ -64,7 +65,14 @@
             circle
             @click="showDeleteUserMsgBox(userlist.row.id)"
           ></el-button>
-          <el-button size="mini" plan type="success" icon="el-icon-check" circle></el-button>
+          <el-button
+            @click="showUserRole(userlist.row)"
+            size="mini"
+            plan
+            type="success"
+            icon="el-icon-check"
+            circle
+          ></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -101,6 +109,46 @@
         <el-button @click="dialogFormVisibleAdd = false">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!-- 编辑用户对话框 -->
+    <el-dialog title="编辑用户" :visible.sync="dialogFormVisibleEdit">
+      <el-form :model="form">
+        <el-form-item label="用户名" label-width="100px">
+          <el-input v-model="form.username" autocomplete="off" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="邮 箱" label-width="100px">
+          <el-input v-model="form.email" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="电 话" label-width="100px">
+          <el-input v-model="form.mobile" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="editUserMsgBox()">确 定</el-button>
+        <el-button @click="dialogFormVisibleEdit = false">取 消</el-button>
+      </div>
+    </el-dialog>
+    <!-- 编辑角色对话框 -->
+    <el-dialog title="分配用户角色" :visible.sync="dialogFormVisibleRol">
+      <el-form :model="form">
+        <el-form-item label="用户名" label-width="100px">{{currusername}}</el-form-item>
+        <el-form-item label="角色名称" label-width="100px">
+          <el-select v-model="currRoleId">
+            <el-option label="请选择" :value="-1"></el-option>
+            <el-option
+              v-for="(item,i) in roles"
+              :label="item.roleName"
+              :value="item.id"
+              :key="i"
+            ></el-option>            
+          </el-select>
+        </el-form-item>
+      </el-form>      
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="setRole()">确 定</el-button>
+        <el-button @click="dialogFormVisibleRol = false">取 消</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 
@@ -111,11 +159,17 @@ export default {
   data() {
     return {
       query: "",
+      currusername: "",
+      curruserid: '',
       userlist: [],
+      roles: [],
       total: -1,
       pagemun: 1,
-      pagesize: 2,
+      pagesize: 8,
+      currRoleId: -1,
       dialogFormVisibleAdd: false,
+      dialogFormVisibleEdit: false,
+      dialogFormVisibleRol: false,
       // 添加表单的数据
       form: {
         username: "",
@@ -127,10 +181,50 @@ export default {
   },
   components: {},
   methods: {
-    editUserMsgBox(userId) {
-      
+    async setRole() {
+      // console.log(this.curruserid);      
+      const res = await this.$http.put(`users/${this.curruserid}/role`,{ rid: this.currRoleId})      
+      const {status,msg} = res.data.meta
+      if (status === 200) {
+        this.$message.success(msg)
+        this.dialogFormVisibleRol = false
+      } else {
+        this.$message.warning(msg)
+      }
     },
 
+    async showUserRole(user) {
+      this.dialogFormVisibleRol = true
+      this.currusername = user.username
+      this.curruserid = user.id
+      const role = await this.$http.get(`roles`)
+      this.roles = role.data.data
+      const res = await this.$http.get(`users/${user.id}`);
+      // console.log(res);
+      this.currRoleId = res.data.data.rid
+    },
+    async editUserMsgBox() {
+      const res = await this.$http.put(`users/${this.form.id}`, this.form);
+      if (res.data.meta.status === 200) {
+        this.dialogFormVisibleEdit = false;
+        // this.form = {}
+        this.getUserList();
+        // console.log(res);        
+        for (const key in this.form) {
+          if (this.form.hasOwnProperty(key)) {
+            this.form[key] = "";
+          }
+        }
+        this.$message.success(res.data.meta.msg);
+      } else {
+        this.$message.warning(res.data.meta.msg);
+      }
+    },
+    editUser(user) {
+      this.dialogFormVisibleEdit = true;
+      this.form = user;
+      // console.log(user);      
+    },
     showDeleteUserMsgBox(userId) {
       this.$confirm("删除此用户?", "提示", {
         cancelButtonText: "取消",
@@ -140,8 +234,8 @@ export default {
         .then(async () => {
           const res = await this.$http.delete(`users/${userId}`);
           if (res.data.meta.status === 200) {
-            this.pagemun = 1
-            this.getUserList()            
+            this.pagemun = 1;
+            this.getUserList();
             this.$message({
               type: "success",
               message: res.data.meta.msg
@@ -185,12 +279,12 @@ export default {
       this.getUserList();
     },
     handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
+      // console.log(`每页 ${val} 条`)
       this.pagesize = val;
       this.getUserList();
     },
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
+      // console.log(`当前页: ${val}`)
       this.pagemun = val;
       this.getUserList();
     },
@@ -200,8 +294,7 @@ export default {
       const res = await this.$http.get(
         `users?query=${this.query}&pagenum=${this.pagemun}&pagesize=${this.pagesize}`
       );
-      console.log(res);
-
+      // console.log(res);
       const {
         meta: { status, msg },
         data: { users, total }
