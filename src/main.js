@@ -10,12 +10,17 @@ import moment from 'moment'
 
 import '@/assets/css/reset.css'
 import MyServerHttp from '@/plugins/http.js'
-import MyHttpServer from './plugins/http';
+import MyHttpServer from './plugins/http'
+
+import myBread from '@/components/cuscom/myBread'
 
 Vue.use(ElementUI)
 
 Vue.use(MyServerHttp)
 Vue.config.productionTip = false
+
+Vue.component(myBread.name,myBread)
+
 Vue.filter('fmtdata',v => {
   return moment(v).format('YYYY-MM-DD')
 })

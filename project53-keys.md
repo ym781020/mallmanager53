@@ -38,3 +38,13 @@ total数据总数
 >this.$confirm().then().catch()
 1.点击确定->.then的参数
 2.点击取消->.catch的参数
+#### 20-项目-用户管理-用户列表-合并分支-推送分支
+1. git add .
+2. git commit -m "注释"
+3. git branch
+4. git checkout master
+5. git merge dev-login
+6. git push
+#### 21-项目-权限管理-角色列表-创建分支
+1. git checkout -b dev-rights
+

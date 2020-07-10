@@ -25,6 +25,7 @@
     </el-row>
     <!-- 3.表格 -->
     <el-table
+      class="el_table_"
       :data="userlist"
       border
       style="width: 100%"
@@ -288,13 +289,10 @@ export default {
       this.pagemun = val;
       this.getUserList();
     },
-    async getUserList() {
-      const token = localStorage.getItem("token");
-      this.$http.defaults.headers.common["Authorization"] = token;
+    async getUserList() {    
       const res = await this.$http.get(
         `users?query=${this.query}&pagenum=${this.pagemun}&pagesize=${this.pagesize}`
       );
-      // console.log(res);
       const {
         meta: { status, msg },
         data: { users, total }
@@ -332,12 +330,8 @@ export default {
 .searchRow {
   margin-top: 20px;
 }
-.el-table__header {
-  /* text-align: center; */
-  /* width:50px;margin:0px auto; */
-  /* width: 200px;  */
-  /* border: 1px solid #ee2415;   */
-  text-align: center;
-  /* padding: 2px 5px */
+.el_table_ {
+  margin-top: 20px;
+  overflow: auto;
 }
 </style>
