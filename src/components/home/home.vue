@@ -21,69 +21,15 @@
     <el-container>
       <el-aside class="aside" width="200px">
         <!-- 侧边栏导航 -->
-        <el-menu 
-        :router = "true"
-        :unique-opened="true">
-          <el-submenu index="1">
+        <el-menu :router="true" :unique-opened="true">
+          <el-submenu :index="item.order + ''" v-for="(item,i) in menuslist" :key="i">
             <template slot="title">
               <i class="el-icon-location"></i>
-              <span>用户管理</span>
+              <span>{{item.authName}}</span>
             </template>
-            <el-menu-item index="users">
+            <el-menu-item :index="v.path" v-for="(v,i) in item.children" :key="i">
               <i class="el-icon-platform-eleme"></i>
-              <span>用户列表</span>
-            </el-menu-item>
-          </el-submenu>
-          <el-submenu index="2">
-            <template slot="title">
-              <i class="el-icon-s-tools"></i>
-              <span>权限管理</span>
-            </template>            
-            <el-menu-item index="roles">
-              <i class="el-icon-user-solid"></i>
-              <span>角色列表</span>
-            </el-menu-item>
-            <el-menu-item index="rights">
-              <i class="el-icon-star-on"></i>
-              <span>权限列表</span>
-            </el-menu-item>
-          </el-submenu>
-          <el-submenu index="3">
-            <template slot="title">
-              <i class="el-icon-s-goods"></i>
-              <span>商品管理</span>
-            </template>
-            <el-menu-item index="3-1">
-              <i class="el-icon-picture-outline"></i>
-              <span>商品列表</span>
-            </el-menu-item>
-            <el-menu-item index="3-2">
-              <i class="el-icon-picture-outline-round"></i>
-              <span>分类参数</span>
-            </el-menu-item>
-            <el-menu-item index="3-3">
-              <i class="el-icon-s-order"></i>
-              <span>商品分类</span>
-            </el-menu-item>
-          </el-submenu>
-          <el-submenu index="4">
-            <template slot="title">
-              <i class="el-icon-s-unfold"></i>
-              <span>订单管理</span>
-            </template>
-            <el-menu-item index="4-1">
-              <i class="el-icon-s-operation"></i>
-              <span>订单列表</span>
-            </el-menu-item>
-          </el-submenu>
-          <el-submenu index="5">
-            <template slot="title">
-              <i class="el-icon-s-marketing"></i>
-              <span>数据统计</span>
-            </template>
-            <el-menu-item index="5-1">
-              <i class="el-icon-s-grid"></i>
-              <span>数据报表</span>
+              <span>{{v.authName}}</span>
             </el-menu-item>
           </el-submenu>
         </el-menu>
@@ -100,24 +46,32 @@ export default {
   name: "home",
   //props: '',
   data() {
-    return {};
+    return {
+      menuslist: []
+    };
   },
   components: {},
   methods: {
+    async getMenutsData() {
+      const res = await this.$http.get(`menus`);
+      this.menuslist = res.data.data;
+    },
     handleSignout() {
-      localStorage.clear()
-      this.$message.success('成为退出')
-      this.$router.push({name: 'login'})
+      localStorage.clear();
+      this.$message.success("成为退出");
+      this.$router.push({ name: "login" });
     }
   },
   //生命周期 - 创建完成（访问当前this实例）
-  beforeCreate () {
-    const token = localStorage.getItem('token')
-    if (!token) {
-      this.$router.push({name: 'login'})
-    }
+  beforeCreate() {
+    // const token = localStorage.getItem("token");
+    // if (!token) {
+    //   this.$router.push({ name: "login" });
+    // }
   },
-  created() {},
+  created() {
+    this.getMenutsData();
+  },
   //生命周期 - 挂载完成（访问DOM元素）
   mounted() {}
 };
