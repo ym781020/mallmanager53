@@ -2,11 +2,8 @@
 <template>
   <el-card class="box-card">
     <!-- 1.面包屑 -->
-    <el-breadcrumb separator-class="el-icon-arrow-right">
-      <!-- <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item> -->
-      <el-breadcrumb-item>首页</el-breadcrumb-item>
-      <el-breadcrumb-item>用户管理</el-breadcrumb-item>
-      <el-breadcrumb-item>用户列表</el-breadcrumb-item>
+    <el-breadcrumb separator-class="el-icon-arrow-right">      
+      <my-bread leval1="用户管理" leval2="用户列表"></my-bread>
     </el-breadcrumb>
     <!-- 2.搜索 -->
     <el-row class="searchRow">
@@ -37,26 +34,26 @@
       <el-table-column prop="email" label="邮箱" width="140"></el-table-column>
       <el-table-column prop="mobile" label="电话" width="120"></el-table-column>
       <el-table-column prop="create_time" label="创建日期" width="120">
-        <template slot-scope="userlist">{{userlist.row.create_time|fmtdata}}</template>
+      <template slot-scope="scope">{{scope.row.create_time|fmtdate}}</template>
       </el-table-column>
       <el-table-column prop="mg_state" label="用户状态" width="80">
-        <template slot-scope="userlist">
+        <template slot-scope="scope">
           <el-switch
-            v-model="userlist.row.mg_state"
+            v-model="scope.row.mg_state"
             active-color="#13ce66"
             inactive-color="#ff4949"
           ></el-switch>
         </template>
       </el-table-column>
       <el-table-column prop="address" label="操作" width="180">
-        <template slot-scope="userlist">
+        <template slot-scope="scope">
           <el-button
             size="mini"
             plan
             type="primary"
             icon="el-icon-edit"
             circle
-            @click="editUser(userlist.row)"
+            @click="editUser(scope.row)"
           ></el-button>
           <el-button
             size="mini"
@@ -64,10 +61,10 @@
             type="danger"
             icon="el-icon-delete"
             circle
-            @click="showDeleteUserMsgBox(userlist.row.id)"
+            @click="showDeleteUserMsgBox(scope.row.id)"
           ></el-button>
           <el-button
-            @click="showUserRole(userlist.row)"
+            @click="showUserRole(scope.row)"
             size="mini"
             plan
             type="success"

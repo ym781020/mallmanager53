@@ -13,6 +13,7 @@ import MyServerHttp from '@/plugins/http.js'
 import MyHttpServer from './plugins/http'
 
 import myBread from '@/components/cuscom/myBread'
+import pages   from '@/components/cuscom/pages'
 
 Vue.use(ElementUI)
 
@@ -20,8 +21,9 @@ Vue.use(MyServerHttp)
 Vue.config.productionTip = false
 
 Vue.component(myBread.name,myBread)
+Vue.component(pages.name,pages)
 
-Vue.filter('fmtdata',v => {
+Vue.filter('fmtdate',v => {
   return moment(v).format('YYYY-MM-DD')
 })
 

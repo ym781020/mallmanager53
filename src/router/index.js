@@ -6,6 +6,10 @@ import Home from '@/components/home/home'
 import Users from '@/components/users/users'
 import Right from '@/components/right/right'
 import Role from '@/components/right/role'
+import GoodsList from '@/components/goods/goods'
+import GoodsAdd from '@/components/goods/goodsadd'
+import Params from '@/components/goods/cateparams'
+import GoodsCate from '@/components/goods/goodscate'
 
 import { Message } from 'element-ui'
 
@@ -15,7 +19,7 @@ Router.prototype.push = function push(location) {
 }
 Vue.use(Router)
 
-const router =  new Router({
+const router = new Router({
   routes: [
     // { path: '/', redirect: '/login' },
     { name: 'login', path: '/login', component: Login },
@@ -30,10 +34,14 @@ const router =  new Router({
           component: Users
         },
         { name: 'rights', path: '/rights', component: Right },
-        { name: 'roles', path: '/roles', component: Role }
+        { name: 'roles', path: '/roles', component: Role },
+        { name: 'goods', path: '/goods', component: GoodsList },
+        { name: 'goodsadd', path: '/goodsadd', component: GoodsAdd },
+        { name: 'params', path: '/params', component: Params },
+        { name: 'categories', path: '/categories', component: GoodsCate }
       ]
-    }    
-  ]  
+    }
+  ]
   // ,  mode: 'history'
 })
 
@@ -42,12 +50,13 @@ router.beforeEach((to, from, next) => {
     next()
   } else {
     const token = localStorage.getItem("token")
-    console.log(token);
+    // config.headers["Authorization"] = token
+    // console.log(token);
     if (!token) {
       Message.warning('请先登录！')
       router.push({ name: 'login' })
       return
-    } 
+    }
   }
   next()
 })
